@@ -1,0 +1,363 @@
+/* Basic reset to remove default spacing and hide scrollbars */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* ページ全体の背景色を設定しておくと分かりやすい */
+    background-color: #f0f0f0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ログインフォームのスタイル */
+#login-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+#login-form {
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px;
+    width: 320px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#login-form h2 {
+    margin: 0 0 20px;
+    color: #333;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.form-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#login-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#register-toggle {
+    background-color: #2196F3;
+    color: white;
+}
+
+#auth-message {
+    margin-top: 15px;
+    font-size: 14px;
+    color: red;
+    text-align: center;
+}
+
+/* アプリ全体を囲むラッパーのスタイル */
+#app-container {
+    /* 画面の中央に配置するための設定 */
+    margin: auto;
+    /* 解像度を1024x600に設定 */
+    width: 1024px;
+    height: 600px;
+    /* これを基準に子要素を配置するため、position: relative を指定 */
+    position: relative;
+    overflow: hidden;
+}
+
+/* 3Dモデルのキャンバスコンテナ */
+#canvas-container {
+    /* 親要素いっぱいに広がるように設定 */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('/static/uploads/backgrounds/default.jpg'); /* デフォルト背景画像 */
+    background-size: cover; /* コンテナ全体を覆うように調整 */
+    background-position: center; /* 画像を中央に配置 */
+    overflow: hidden;
+}
+
+/* ハンバーガーメニューアイコンのスタイル */
+#menu-icon {
+    /* #app-container を基準に絶対配置する */
+    position: absolute; 
+    /* z-indexで手前に表示 */
+    z-index: 10;
+    /* 位置の指定 */
+    top: 20px;
+    right: 20px; /* 右上に配置 */
+    /* アイコンのサイズ */
+    width: 30px;
+    height: 24px;
+    
+    /* 以下はアイコンの見た目の設定 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer; 
+}
+
+/* アイコンの3本線 */
+#menu-icon span {
+    display: block;
+    width: 100%;
+    height: 4px;
+    background-color: #333;
+    border-radius: 2px;
+}
+
+/* 設定パネル */
+#settings-panel {
+    position: absolute;
+    top: 0;
+    right: -350px; /* 初期状態では画面外に配置 */
+    width: 350px;
+    height: 100%;
+    background-color: white;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+    transition: transform 0.3s ease-in-out;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* 設定パネルが表示されるときのスタイル */
+#settings-panel.active {
+    transform: translateX(-350px);
+}
+
+/* パネルのヘッダー */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+#close-panel {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+}
+
+/* パネルのセクション */
+.panel-section {
+    margin-bottom: 30px;
+}
+
+.panel-section h3 {
+    margin: 0 0 15px;
+    font-size: 16px;
+    color: #555;
+}
+
+/* キャラクターリストのスタイル */
+#character-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+#character-list button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+#character-list button:hover {
+    background-color: #45a049;
+}
+
+/* アップロードフォームのスタイル */
+#upload-form button {
+    padding: 10px 15px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#upload-form button:hover {
+    background-color: #0b7dda;
+}
+
+#upload-message {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #f44336;
+}
+
+/* パネルのフッター */
+.panel-footer {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+#logout-button {
+    padding: 10px 15px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+}
+
+#logout-button:hover {
+    background-color: #d32f2f;
+}
+
+/* オーバーレイ */
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 15;
+    display: none;
+}
+
+#overlay.active {
+    display: block;
+}
+
+/* モデル選択UI用のスタイル */
+#model-selector-overlay button {
+    transition: all 0.3s ease;
+}
+
+#model-selector-overlay button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* 背景画像アップロードセクション */
+.panel-section.background-upload {
+    margin-bottom: 20px;
+}
+
+.panel-section.background-upload h3 {
+    margin-bottom: 10px;
+}
+
+#background-upload-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#background-upload-form input[type="file"] {
+    margin-bottom: 10px;
+}
+
+#background-upload-form button {
+    padding: 10px 15px;
+    background-color: #673AB7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+#background-upload-form button:hover {
+    background-color: #5E35B1;
+}
+
+#background-upload-message {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #4CAF50;
+}
+
+#background-upload-message.error {
+    color: #f44336;
+}
+
+/* 背景画像ライブラリ */
+#background-library {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#background-library .bg-thumbnail {
+    width: 100%;
+    height: 60px;
+    border-radius: 4px;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+#background-library .bg-thumbnail:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#background-library .bg-thumbnail.active {
+    border-color: #4CAF50;
+}

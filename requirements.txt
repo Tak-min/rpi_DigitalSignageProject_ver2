@@ -1,0 +1,25 @@
+# FastAPI と Web サーバー
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# データベース関連
+SQLAlchemy==2.0.23
+sqlalchemy==2.0.23
+
+# 認証とセキュリティ
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.6
+
+# 画像処理
+Pillow==10.1.0
+
+# HTTP リクエスト（テスト用）
+requests==2.31.0
+
+# Python 標準ライブラリの拡張
+python-dateutil==2.8.2
+
+# 開発・テスト用（オプション）
+pytest==7.4.3
+pytest-asyncio==0.21.1

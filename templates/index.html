@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3Dキャラクターデジタルサイネージ</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- ログインフォーム -->
+    <div id="login-container">
+        <div id="login-form">
+            <h2>ログイン</h2>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="email">メールアドレス</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" id="login-button">ログイン</button>
+                    <button type="button" id="register-toggle">新規登録</button>
+                </div>
+                <div id="auth-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- メインアプリケーションコンテナ -->
+    <div id="app-container" style="display: none;">
+        <!-- 3Dキャンバス -->
+        <div id="canvas-container"></div>
+
+        <!-- ハンバーガーメニューアイコン -->
+        <button id="menu-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- 設定パネル -->
+        <div id="settings-panel">
+            <div class="panel-header">
+                <h2>設定</h2>
+                <button id="close-panel">&times;</button>
+            </div>
+            
+            <div class="panel-section">
+                <h3>キャラクター選択</h3>
+                <div id="character-list"></div>
+            </div>
+            
+            <div class="panel-section">
+                <h3>モデルアップロード</h3>
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="model-name">モデル名</label>
+                        <input type="text" id="model-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vrm-file">VRMファイル</label>
+                        <input type="file" id="vrm-file" name="vrm_file" accept=".vrm" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vrma-files">アニメーションファイル (複数選択可)</label>
+                        <input type="file" id="vrma-files" name="vrma_files" accept=".vrma" multiple>
+                    </div>
+                    <button type="submit">アップロード</button>
+                    <div id="upload-message"></div>
+                </form>
+            </div>
+            
+            <!-- 背景画像設定セクション -->
+            <div class="panel-section background-upload">
+                <h3>背景画像設定</h3>
+                <form id="background-upload-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="background-file">背景画像</label>
+                        <input type="file" id="background-file" name="background_file" accept=".jpg,.jpeg,.png,.gif" required>
+                    </div>
+                    <button type="submit">背景をアップロード</button>
+                    <div id="background-upload-message"></div>
+                </form>
+                
+                <h3 style="margin-top: 15px;">背景ライブラリ</h3>
+                <div id="background-library"></div>
+            </div>
+            
+            <div class="panel-footer">
+                <button id="logout-button">ログアウト</button>
+            </div>
+        </div>
+
+        <!-- オーバーレイ -->
+        <div id="overlay"></div>
+    </div>    
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.176.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.176.0/examples/jsm/",
+                "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.min.js"
+            }
+        }
+    </script>    
+    <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>
