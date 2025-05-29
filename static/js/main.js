@@ -149,6 +149,11 @@ async function fetchModels() {
         });
 
         if (!response.ok) {
+            // 401エラーの場合は認証エラーとして処理
+            if (await handleApiError(response, 'fetchModels')) {
+                return []; // 認証エラーの場合は空配列を返す
+            }
+            
             const errorText = await response.text();
             console.error('Models fetch failed:', {
                 status: response.status,
@@ -178,6 +183,11 @@ async function uploadModel(formData) {
         });
 
         if (!response.ok) {
+            // 401エラーの場合は認証エラーとして処理
+            if (await handleApiError(response, 'uploadModel')) {
+                return null; // 認証エラーの場合はnullを返す
+            }
+            
             const errorText = await response.text();
             console.error('Model upload failed:', {
                 status: response.status,
@@ -207,6 +217,11 @@ async function uploadBackground(formData) {
         });
 
         if (!response.ok) {
+            // 401エラーの場合は認証エラーとして処理
+            if (await handleApiError(response, 'uploadBackground')) {
+                return null; // 認証エラーの場合はnullを返す
+            }
+            
             const errorText = await response.text();
             console.error('Background upload failed:', {
                 status: response.status,
@@ -234,6 +249,11 @@ async function fetchBackgrounds() {
         });
 
         if (!response.ok) {
+            // 401エラーの場合は認証エラーとして処理
+            if (await handleApiError(response, 'fetchBackgrounds')) {
+                return []; // 認証エラーの場合は空配列を返す
+            }
+            
             const errorText = await response.text();
             console.error('Backgrounds fetch failed:', {
                 status: response.status,
@@ -892,11 +912,8 @@ function init() {
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('app-container').style.display = 'block';
         
-        // モデル一覧を取得
-        loadUserModels();
-        
-        // 背景画像一覧を取得
-        loadUserBackgrounds();
+        // トークンの有効性を検証してからデータを読み込む
+        validateTokenAndLoadData();
     }
     
     // ハンバーガーメニューのクリックイベント
@@ -1012,6 +1029,66 @@ function init() {
     
     // アニメーションループを開始
     animate();
+}
+
+// トークンの有効性を検証してデータを読み込む
+async function validateTokenAndLoadData() {
+    try {
+        // まずユーザー情報を取得してトークンの有効性を確認
+        const response = await fetch('/users/me/', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            console.log('Token validation successful');
+            // トークンが有効な場合、データを読み込む
+            await loadUserModels();
+            await loadUserBackgrounds();
+        } else {
+            console.log('Token validation failed:', response.status);
+            // トークンが無効な場合、ログアウト処理を実行
+            handleInvalidToken();
+        }
+    } catch (error) {
+        console.error('Token validation error:', error);
+        // ネットワークエラーなどの場合もログアウト
+        handleInvalidToken();
+    }
+}
+
+// 無効なトークンの処理
+function handleInvalidToken() {
+    console.log('Handling invalid token - logging out');
+    
+    // ローカルストレージからトークンを削除
+    localStorage.removeItem('accessToken');
+    accessToken = null;
+    isLoggedIn = false;
+    userModels = [];
+    userBackgrounds = [];
+    
+    // UIをログイン画面に戻す
+    document.getElementById('app-container').style.display = 'none';
+    document.getElementById('login-container').style.display = 'flex';
+    
+    // エラーメッセージを表示
+    const messageEl = document.getElementById('auth-message');
+    if (messageEl) {
+        messageEl.textContent = 'セッションが無効です。再度ログインしてください。';
+        messageEl.style.color = '#ff6b6b';
+    }
+}
+
+// API呼び出しエラーのハンドリングを改善
+async function handleApiError(response, operation) {
+    if (response.status === 401) {
+        console.log(`401 error during ${operation} - token may be invalid`);
+        handleInvalidToken();
+        return true; // エラーハンドリング済み
+    }
+    return false; // 他のエラー
 }
 
 // 初期化を実行

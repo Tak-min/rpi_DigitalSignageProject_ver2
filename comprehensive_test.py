@@ -12,7 +12,7 @@ from pathlib import Path
 
 class ServerTester:
     def __init__(self):
-        self.base_url = "http://localhost:8001"
+        self.base_url = "http://localhost:8000"
         self.server_process = None
         
     def start_server(self):

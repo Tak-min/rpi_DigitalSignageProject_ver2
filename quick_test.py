@@ -7,7 +7,7 @@ import time
 
 def test_server_connection():
     """サーバーへの接続テスト"""
-    base_url = "http://localhost:8001"
+    base_url = "http://localhost:8000"
     
     print("🔍 サーバー接続テストを実行中...")
     

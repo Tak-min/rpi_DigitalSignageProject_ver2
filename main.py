@@ -251,6 +251,6 @@ def hello():
 if __name__ == "__main__":
     import uvicorn
     print("🚀 FastAPIサーバーを起動しています...")
-    print("📍 URL: http://localhost:8001")
-    print("📖 API ドキュメント: http://localhost:8001/docs")
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    print("📍 URL: http://localhost:8000")
+    print("📖 API ドキュメント: http://localhost:8000/docs")
+    uvicorn.run(app, host="0.0.0.0", port=8000)
