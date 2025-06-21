@@ -282,18 +282,18 @@ function setBackground(backgroundPath) {
 // --- UI操作のための関数群 ---
 // ログイン/登録フォーム切り替え
 function toggleAuthForm(isLogin) {
-    const formTitle = document.querySelector('#login-form h2');
+    const formTitle = document.getElementById('form-title');
     const submitButton = document.getElementById('login-button');
     const toggleButton = document.getElementById('register-toggle');
     
     if (isLogin) {
-        formTitle.textContent = 'ログイン';
-        submitButton.textContent = 'ログイン';
-        toggleButton.textContent = '新規登録';
+        formTitle.textContent = 'Login';
+        submitButton.textContent = 'Login';
+        toggleButton.textContent = 'Create Account';
     } else {
-        formTitle.textContent = '新規登録';
-        submitButton.textContent = '登録';
-        toggleButton.textContent = 'ログイン画面に戻る';
+        formTitle.textContent = 'Create Account';
+        submitButton.textContent = 'Register';
+        toggleButton.textContent = 'Back to Login';
     }
 }
 
@@ -322,8 +322,8 @@ async function handleAuthSubmit(e, isLogin) {
         await loadUserModels();
     } else {
         messageEl.textContent = isLogin ? 
-            'ログインに失敗しました。メールアドレスとパスワードを確認してください。' : 
-            '登録に失敗しました。別のメールアドレスを使用するか、管理者に連絡してください。';
+            'Login failed. Please check your email and password.' :
+            'Registration failed. Please try a different email or contact support.';
     }
 }
 
@@ -342,6 +342,7 @@ function logout() {
     
     document.getElementById('app-container').style.display = 'none';
     document.getElementById('login-container').style.display = 'flex';
+    toggleAuthForm(true); // フォームをログイン状態に戻す
 }
 
 // 設定パネルの表示制御
@@ -359,14 +360,21 @@ function createCharacterList(models) {
     listEl.innerHTML = '';
     
     if (models.length === 0) {
-        listEl.innerHTML = '<p>利用可能なモデルがありません。モデルをアップロードしてください。</p>';
+        listEl.innerHTML = '<p>No models available. Please upload a model.</p>';
         return;
     }
     
     models.forEach(model => {
         const button = document.createElement('button');
         button.textContent = model.name;
-        button.onclick = () => loadModel(model.id);
+        button.dataset.modelId = model.id;
+        button.onclick = () => {
+            // 他のボタンから active クラスを削除
+            document.querySelectorAll('#character-list button').forEach(btn => btn.classList.remove('active'));
+            // クリックされたボタンに active クラスを追加
+            button.classList.add('active');
+            loadModel(model.id);
+        };
         listEl.appendChild(button);
     });
 }
@@ -484,8 +492,13 @@ async function loadUserModels() {
 async function loadModel(modelId) {
     currentModelId = modelId;
     const model = userModels.find(m => m.id === modelId);
-    
+
     if (!model) return;
+
+    // 対応するボタンに active クラスを付与
+    document.querySelectorAll('#character-list button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.modelId === modelId);
+    });
     
     await loadVrmFromPath(model.vrm_path);
     
@@ -618,32 +631,27 @@ async function loadVrmAnimation(path) {
     }
 }
 
-// アニメーションを再生する
+// アニメーションデータからAnimationActionを生成する
 function playAnimation(animation) {
-    if (!currentVrm || !animation || !mixer) return false;
-    
+    if (!currentVrm || !animation || !mixer) return null;
+
     try {
-        // 現在のアニメーションを停止
-        if (currentVrmAction) {
-            currentVrmAction.stop();
-        }
-        
         // humanoidTracksがある場合、それを使用してAnimationClipを作成
         if (animation.humanoidTracks && Object.keys(animation.humanoidTracks).length > 0) {
             const tracks = [];
-            
+
             // 全てのhumanoidTracksから適切なKeyframeTracksを作成
             for (const boneName of Object.keys(animation.humanoidTracks)) {
                 const boneTrack = animation.humanoidTracks[boneName];
                 if (!boneTrack) continue;
-                
+
                 // ヒューマノイドボーンのマッピング
                 const vrmBoneName = currentVrm.humanoid?.getBoneNode(boneName)?.name;
                 if (!vrmBoneName) continue;
-                
+
                 // トラックパスを生成
                 const trackPath = `${vrmBoneName}.quaternion`;
-                
+
                 // キーフレームトラックを作成 (回転情報)
                 if (boneTrack.rotations && boneTrack.rotations.times.length > 0) {
                     const rotationTrack = new THREE.QuaternionKeyframeTrack(
@@ -653,7 +661,7 @@ function playAnimation(animation) {
                     );
                     tracks.push(rotationTrack);
                 }
-                
+
                 // 位置情報があれば追加
                 if (boneTrack.translations && boneTrack.translations.times.length > 0) {
                     const translationPath = `${vrmBoneName}.position`;
@@ -665,37 +673,34 @@ function playAnimation(animation) {
                     tracks.push(translationTrack);
                 }
             }
-            
+
             if (tracks.length > 0) {
                 const clip = new THREE.AnimationClip('vrmAnimation', animation.duration, tracks);
-                
-                // ミキサーでアニメーションを再生
-                currentVrmAction = mixer.clipAction(clip);
-                currentVrmAction.setLoop(THREE.LoopRepeat);
-                currentVrmAction.play();
-                return true;
+                const action = mixer.clipAction(clip);
+                action.setLoop(THREE.LoopRepeat);
+                return action;
             }
         }
-        
+
         // フォールバックとして、フェイクアニメーションを適用
         return createFallbackAnimation();
     } catch (error) {
-        console.error('Error playing animation:', error);
+        console.error('Error creating animation action:', error);
         return createFallbackAnimation();
     }
 }
 
-// フォールバックアニメーション（モデルが動かない場合の対応）
+// フォールバック用のAnimationActionを生成する
 function createFallbackAnimation() {
     try {
-        if (!currentVrm || !mixer) return false;
-        
+        if (!currentVrm || !mixer) return null;
+
         console.log('Creating fallback animation');
-        
+
         // 頭部のわずかな回転アニメーション
         const headNode = currentVrm.humanoid?.getBoneNode('head');
         const tracks = [];
-        
+
         if (headNode) {
             const times = [0, 1, 2, 3, 4];
             const headRotValues = [
@@ -705,7 +710,7 @@ function createFallbackAnimation() {
                 -0.05, -0.05, 0, 0.997,      // 3秒: 左下を向く
                 0, 0, 0, 1                   // 4秒: 初期位置に戻る
             ];
-            
+
             const headRotTrack = new THREE.QuaternionKeyframeTrack(
                 `${headNode.name}.quaternion`,
                 times,
@@ -713,19 +718,18 @@ function createFallbackAnimation() {
             );
             tracks.push(headRotTrack);
         }
-        
+
         if (tracks.length > 0) {
             const clip = new THREE.AnimationClip('fallbackAnimation', 4, tracks);
-            currentVrmAction = mixer.clipAction(clip);
-            currentVrmAction.setLoop(THREE.LoopRepeat);
-            currentVrmAction.play();
-            return true;
+            const action = mixer.clipAction(clip);
+            action.setLoop(THREE.LoopRepeat);
+            return action;
         }
-        
-        return false;
+
+        return null;
     } catch (error) {
         console.error('Error creating fallback animation:', error);
-        return false;
+        return null;
     }
 }
 
@@ -839,9 +843,9 @@ function updateCharacterBehavior(delta) {
 function playAnimationByType(type) {
     // アニメーションが初期化されていない場合は何もしない
     if (!mixer) return;
-    
+
     let targetAnimation = null;
-    
+
     switch (type) {
         case 'idle':
             targetAnimation = idleAnimation;
@@ -858,19 +862,26 @@ function playAnimationByType(type) {
             }
             break;
     }
-    
-    // すでに同じアニメーションを再生中なら何もしない
-    if (currentVrmAction === targetAnimation || !targetAnimation) return;
-    
+
+    if (!targetAnimation) return;
+
+    // playAnimation関数を呼び出してAnimationActionを取得
+    const newAction = playAnimation(targetAnimation);
+
+    if (!newAction) return;
+
+    // 現在のアクションと新しいアクションが同じインスタンスなら何もしない
+    if (currentVrmAction === newAction) return;
+
     // 前のアニメーションをフェードアウト
     if (currentVrmAction) {
         currentVrmAction.fadeOut(0.5);
     }
-      // 新しいアニメーションをフェードイン
-    currentVrmAction = targetAnimation;
+
+    // 新しいアニメーションをフェードイン
+    currentVrmAction = newAction;
     currentVrmAction.reset();
-    currentVrmAction.fadeIn(0.5);
-    currentVrmAction.play();
+    currentVrmAction.fadeIn(0.5).play();
 }
 
 // --- 改良されたレンダーループ ---
@@ -931,15 +942,21 @@ function init() {
     // 認証フォームのイベント
     const authForm = document.getElementById('auth-form');
     if (authForm) {
-        let isLoginMode = true;
-        
         // フォーム送信イベント
-        authForm.addEventListener('submit', (e) => handleAuthSubmit(e, isLoginMode));
-        
+        authForm.addEventListener('submit', (e) => {
+            // 送信時にUIの状態（フォームタイトル）を直接確認して、ログインか登録かを判断
+            const formTitle = document.getElementById('form-title');
+            const isLogin = formTitle.textContent === 'Login';
+            handleAuthSubmit(e, isLogin);
+        });
+
         // 切り替えボタンのクリックイベント
         document.getElementById('register-toggle').addEventListener('click', () => {
-            isLoginMode = !isLoginMode;
-            toggleAuthForm(isLoginMode);
+            // 現在のUIの状態を直接確認
+            const formTitle = document.getElementById('form-title');
+            const isCurrentlyLogin = formTitle.textContent === 'Login';
+            // UIの状態を反転させる
+            toggleAuthForm(!isCurrentlyLogin);
         });
     }
     
@@ -952,18 +969,18 @@ function init() {
             const formData = new FormData(uploadForm);
             const messageEl = document.getElementById('upload-message');
             
-            messageEl.textContent = 'アップロード中...';
+            messageEl.textContent = 'Uploading...';
             
             const result = await uploadModel(formData);
             
             if (result) {
-                messageEl.textContent = 'モデルが正常にアップロードされました。';
+                messageEl.textContent = 'Model uploaded successfully.';
                 uploadForm.reset();
                 
                 // モデル一覧を再取得
                 await loadUserModels();
             } else {
-                messageEl.textContent = 'アップロードに失敗しました。もう一度お試しください。';
+                messageEl.textContent = 'Upload failed. Please try again.';
             }
         });
     }
@@ -977,7 +994,7 @@ function init() {
             const formData = new FormData(backgroundUploadForm);
             const messageEl = document.getElementById('background-upload-message');
             
-            messageEl.textContent = 'アップロード中...';
+            messageEl.textContent = 'Uploading...';
             messageEl.className = '';
             
             try {
@@ -994,7 +1011,7 @@ function init() {
                 const result = await uploadBackground(formData);
                 
                 if (result) {
-                    messageEl.textContent = '背景画像が正常にアップロードされました。';
+                    messageEl.textContent = 'Background uploaded successfully.';
                     messageEl.className = '';
                     backgroundUploadForm.reset();
                     
@@ -1016,12 +1033,12 @@ function init() {
                         });
                     }
                 } else {
-                    messageEl.textContent = 'アップロードに失敗しました。もう一度お試しください。';
+                    messageEl.textContent = 'Upload failed. Please try again.';
                     messageEl.className = 'error';
                 }
             } catch (error) {
                 console.error('Background upload error:', error);
-                messageEl.textContent = `アップロードエラー: ${error.message || '不明なエラー'}`;
+                messageEl.textContent = `Upload error: ${error.message || 'Unknown error'}`;
                 messageEl.className = 'error';
             }
         });
@@ -1076,8 +1093,8 @@ function handleInvalidToken() {
     // エラーメッセージを表示
     const messageEl = document.getElementById('auth-message');
     if (messageEl) {
-        messageEl.textContent = 'セッションが無効です。再度ログインしてください。';
-        messageEl.style.color = '#ff6b6b';
+        messageEl.textContent = 'Your session is invalid. Please log in again.';
+        messageEl.style.color = 'var(--error-color)';
     }
 }
 

@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3Dキャラクターデジタルサイネージ</title>
+    <title>3D Character Signage</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <!-- ログインフォーム -->
     <div id="login-container">
         <div id="login-form">
-            <h2>ログイン</h2>
+            <h2 id="form-title">ログイン</h2>
             <form id="auth-form">
                 <div class="form-group">
-                    <label for="email">メールアドレス</label>
+                    <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">パスワード</label>
+                    <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" id="login-button">ログイン</button>
-                    <button type="button" id="register-toggle">新規登録</button>
+                    <button type="submit" id="login-button">Login</button>
+                    <button type="button" id="register-toggle">Create Account</button>
                 </div>
                 <div id="auth-message"></div>
             </form>
@@ -38,60 +41,58 @@
         <!-- ハンバーガーメニューアイコン -->
         <button id="menu-icon">
             <span></span>
-            <span></span>
-            <span></span>
         </button>
 
         <!-- 設定パネル -->
         <div id="settings-panel">
             <div class="panel-header">
-                <h2>設定</h2>
+                <h2>Settings</h2>
                 <button id="close-panel">&times;</button>
             </div>
             
             <div class="panel-section">
-                <h3>キャラクター選択</h3>
+                <h3>Select Character</h3>
                 <div id="character-list"></div>
             </div>
             
             <div class="panel-section">
-                <h3>モデルアップロード</h3>
+                <h3>Upload Model</h3>
                 <form id="upload-form" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="model-name">モデル名</label>
+                        <label for="model-name">Model Name</label>
                         <input type="text" id="model-name" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="vrm-file">VRMファイル</label>
+                        <label for="vrm-file">VRM File</label>
                         <input type="file" id="vrm-file" name="vrm_file" accept=".vrm" required>
                     </div>
                     <div class="form-group">
-                        <label for="vrma-files">アニメーションファイル (複数選択可)</label>
+                        <label for="vrma-files">Animation Files (multi-select)</label>
                         <input type="file" id="vrma-files" name="vrma_files" accept=".vrma" multiple>
                     </div>
-                    <button type="submit">アップロード</button>
+                    <button type="submit">Upload</button>
                     <div id="upload-message"></div>
                 </form>
             </div>
             
             <!-- 背景画像設定セクション -->
             <div class="panel-section background-upload">
-                <h3>背景画像設定</h3>
+                <h3>Background Settings</h3>
                 <form id="background-upload-form" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="background-file">背景画像</label>
+                        <label for="background-file">Background Image</label>
                         <input type="file" id="background-file" name="background_file" accept=".jpg,.jpeg,.png,.gif" required>
                     </div>
-                    <button type="submit">背景をアップロード</button>
+                    <button type="submit">Upload Background</button>
                     <div id="background-upload-message"></div>
                 </form>
                 
-                <h3 style="margin-top: 15px;">背景ライブラリ</h3>
+                <h3 style="margin-top: 25px;">Background Library</h3>
                 <div id="background-library"></div>
             </div>
             
             <div class="panel-footer">
-                <button id="logout-button">ログアウト</button>
+                <button id="logout-button">Logout</button>
             </div>
         </div>
 

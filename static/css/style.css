@@ -1,14 +1,35 @@
-/* Basic reset to remove default spacing and hide scrollbars */
+/* --- Modern UI Redesign --- */
+
+/* 1. Global Styles & Variables
+/* ======================================== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    --bg-color: #1a1a2e;
+    --primary-color: #16213e;
+    --secondary-color: #0f3460;
+    --accent-color: #e94560;
+    --font-color: #dcdcdc;
+    --font-color-dark: #a0a0a0;
+    --success-color: #50c878;
+    --error-color: #e94560;
+    --border-radius: 12px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
 body, html {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    /* ページ全体の背景色を設定しておくと分かりやすい */
-    background-color: #f0f0f0;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-color);
+    font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+    color: var(--font-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* ログインフォームのスタイル */
+/* 2. Login Container
+/* ======================================== */
 #login-container {
     position: absolute;
     top: 0;
@@ -18,323 +39,337 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.8);
+    background: linear-gradient(45deg, var(--bg-color), var(--primary-color));
+    backdrop-filter: blur(10px);
 }
 
 #login-form {
-    background-color: white;
-    border-radius: 8px;
-    padding: 30px;
-    width: 320px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-#login-form h2 {
-    margin: 0 0 20px;
-    color: #333;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    width: 360px;
+    box-shadow: var(--shadow);
     text-align: center;
 }
 
+#login-form h2 {
+    margin: 0 0 30px;
+    color: var(--font-color);
+    font-size: 28px;
+    font-weight: 700;
+}
+
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    text-align: left;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    color: #555;
+    margin-bottom: 8px;
+    color: var(--font-color-dark);
     font-size: 14px;
+    font-weight: 500;
 }
 
 .form-group input {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--font-color);
+    font-size: 16px;
     box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .form-actions {
     display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
 }
 
 .form-actions button {
-    padding: 10px 20px;
+    padding: 15px 20px;
     border: none;
-    border-radius: 4px;
-    font-size: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 #login-button {
-    background-color: #4CAF50;
+    background: var(--accent-color);
     color: white;
 }
 
+#login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+}
+
 #register-toggle {
-    background-color: #2196F3;
+    background: transparent;
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+}
+
+#register-toggle:hover {
+    background: var(--accent-color);
     color: white;
 }
 
 #auth-message {
-    margin-top: 15px;
+    margin-top: 20px;
     font-size: 14px;
-    color: red;
-    text-align: center;
+    color: var(--error-color);
+    min-height: 20px;
 }
 
-/* アプリ全体を囲むラッパーのスタイル */
+/* 3. App Container & Canvas
+/* ======================================== */
 #app-container {
-    /* 画面の中央に配置するための設定 */
     margin: auto;
-    /* 解像度を1024x600に設定 */
     width: 1024px;
     height: 600px;
-    /* これを基準に子要素を配置するため、position: relative を指定 */
     position: relative;
     overflow: hidden;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
 }
 
-/* 3Dモデルのキャンバスコンテナ */
 #canvas-container {
-    /* 親要素いっぱいに広がるように設定 */
     position: absolute;
     width: 100%;
     height: 100%;
-    background-image: url('/static/uploads/backgrounds/default.jpg'); /* デフォルト背景画像 */
-    background-size: cover; /* コンテナ全体を覆うように調整 */
-    background-position: center; /* 画像を中央に配置 */
-    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.5s ease-in-out;
 }
 
-/* ハンバーガーメニューアイコンのスタイル */
+/* 4. Menu Icon & Overlay
+/* ======================================== */
 #menu-icon {
-    /* #app-container を基準に絶対配置する */
-    position: absolute; 
-    /* z-indexで手前に表示 */
-    z-index: 10;
-    /* 位置の指定 */
+    position: absolute;
+    z-index: 30;
     top: 20px;
-    right: 20px; /* 右上に配置 */
-    /* アイコンのサイズ */
-    width: 30px;
-    height: 24px;
-    
-    /* 以下はアイコンの見た目の設定 */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer; 
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
-/* アイコンの3本線 */
+#menu-icon:hover {
+    background: var(--accent-color);
+}
+
 #menu-icon span {
     display: block;
-    width: 100%;
-    height: 4px;
-    background-color: #333;
-    border-radius: 2px;
+    width: 20px;
+    height: 2px;
+    background-color: var(--font-color);
+    border-radius: 1px;
+    position: relative;
+    transition: all 0.3s ease;
 }
 
-/* 設定パネル */
-#settings-panel {
+#menu-icon span::before,
+#menu-icon span::after {
+    content: '';
     position: absolute;
-    top: 0;
-    right: -350px; /* 初期状態では画面外に配置 */
-    width: 350px;
+    width: 100%;
     height: 100%;
-    background-color: white;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 20;
-    transition: transform 0.3s ease-in-out;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
+    background-color: var(--font-color);
+    border-radius: 1px;
+    left: 0;
+    transition: all 0.3s ease;
 }
 
-/* 設定パネルが表示されるときのスタイル */
-#settings-panel.active {
-    transform: translateX(-350px);
+#menu-icon span::before {
+    transform: translateY(-6px);
 }
 
-/* パネルのヘッダー */
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
+#menu-icon span::after {
+    transform: translateY(6px);
 }
 
-.panel-header h2 {
-    margin: 0;
-    font-size: 20px;
-    color: #333;
-}
-
-#close-panel {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #666;
-    cursor: pointer;
-}
-
-/* パネルのセクション */
-.panel-section {
-    margin-bottom: 30px;
-}
-
-.panel-section h3 {
-    margin: 0 0 15px;
-    font-size: 16px;
-    color: #555;
-}
-
-/* キャラクターリストのスタイル */
-#character-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-#character-list button {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-#character-list button:hover {
-    background-color: #45a049;
-}
-
-/* アップロードフォームのスタイル */
-#upload-form button {
-    padding: 10px 15px;
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    width: 100%;
-    margin-top: 10px;
-}
-
-#upload-form button:hover {
-    background-color: #0b7dda;
-}
-
-#upload-message {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #f44336;
-}
-
-/* パネルのフッター */
-.panel-footer {
-    margin-top: 30px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-}
-
-#logout-button {
-    padding: 10px 15px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    width: 100%;
-}
-
-#logout-button:hover {
-    background-color: #d32f2f;
-}
-
-/* オーバーレイ */
 #overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     z-index: 15;
-    display: none;
-}
-
-#overlay.active {
-    display: block;
-}
-
-/* モデル選択UI用のスタイル */
-#model-selector-overlay button {
+    opacity: 0;
+    visibility: hidden;
     transition: all 0.3s ease;
 }
 
-#model-selector-overlay button:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+#overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
-/* 背景画像アップロードセクション */
-.panel-section.background-upload {
-    margin-bottom: 20px;
-}
-
-.panel-section.background-upload h3 {
-    margin-bottom: 10px;
-}
-
-#background-upload-form {
+/* 5. Settings Panel
+/* ======================================== */
+#settings-panel {
+    position: absolute;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100%;
+    background: var(--primary-color);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+    z-index: 20;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    padding: 25px;
+    box-sizing: border-box;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
 
-#background-upload-form input[type="file"] {
-    margin-bottom: 10px;
+#settings-panel.active {
+    transform: translateX(-400px);
 }
 
-#background-upload-form button {
-    padding: 10px 15px;
-    background-color: #673AB7;
-    color: white;
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--font-color);
+}
+
+#close-panel {
+    background: none;
     border: none;
-    border-radius: 4px;
+    font-size: 30px;
+    color: var(--font-color-dark);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#close-panel:hover {
+    color: var(--accent-color);
+}
+
+.panel-section {
+    margin-bottom: 35px;
+}
+
+.panel-section h3 {
+    margin: 0 0 20px;
+    font-size: 18px;
+    color: var(--font-color);
+    font-weight: 500;
+    border-left: 3px solid var(--accent-color);
+    padding-left: 10px;
+}
+
+/* 6. Panel Content Styles
+/* ======================================== */
+
+/* Character List */
+#character-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+#character-list button {
+    padding: 12px;
+    background-color: var(--secondary-color);
+    color: var(--font-color);
+    border: 1px solid transparent;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
+    text-align: center;
 }
 
-#background-upload-form button:hover {
-    background-color: #5E35B1;
+#character-list button:hover,
+#character-list button.active {
+    background-color: var(--accent-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-#background-upload-message {
-    margin-top: 8px;
+/* Upload Forms */
+#upload-form, #background-upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#upload-form .form-group,
+#background-upload-form .form-group {
+    margin-bottom: 0;
+}
+
+#upload-form button,
+#background-upload-form button {
+    padding: 12px 15px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
     font-size: 14px;
-    color: #4CAF50;
+    font-weight: 500;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.3s ease;
 }
 
-#background-upload-message.error {
-    color: #f44336;
+#upload-form button:hover,
+#background-upload-form button:hover {
+    opacity: 0.9;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
 }
 
-/* 背景画像ライブラリ */
+#upload-message, #background-upload-message {
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--success-color);
+    text-align: center;
+    min-height: 20px;
+}
+
+#upload-message.error, #background-upload-message.error {
+    color: var(--error-color);
+}
+
+/* Background Library */
 #background-library {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -344,20 +379,65 @@ body, html {
 
 #background-library .bg-thumbnail {
     width: 100%;
-    height: 60px;
-    border-radius: 4px;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    border-radius: 8px;
     background-size: cover;
     background-position: center;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
 #background-library .bg-thumbnail:hover {
     transform: scale(1.05);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-color: rgba(233, 69, 96, 0.5);
 }
 
 #background-library .bg-thumbnail.active {
-    border-color: #4CAF50;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
+}
+
+/* Panel Footer */
+.panel-footer {
+    margin-top: auto; /* Pushes footer to the bottom */
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#logout-button {
+    padding: 12px 15px;
+    background-color: transparent;
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+#logout-button:hover {
+    background-color: var(--error-color);
+    color: white;
+}
+
+/* Custom Scrollbar */
+#settings-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+#settings-panel::-webkit-scrollbar-track {
+    background: var(--primary-color);
+}
+
+#settings-panel::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-color);
+    border-radius: 4px;
+}
+
+#settings-panel::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-color);
 }
